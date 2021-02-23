@@ -4,6 +4,11 @@
 
 Multer is a Node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
 
+## Features 
+
+1. Single file upload using Multer
+2. Store uploaded file path on MongoDB Atlas.
+
 ## Quick Start
 
 Clone the repository and do following:
