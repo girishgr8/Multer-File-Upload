@@ -25,14 +25,14 @@ const upload = multer({ storage: storage }).single("fileUpload");
 // connect to mongodb database
 const MongoClient = require("mongodb").MongoClient;
 const url =
-	"mongodb+srv://ait:ait@cluster0.4bsqv.mongodb.net/ShreejiEstates?retryWrites=true&w=majority";
+	"mongodb+srv://ait:ait@cluster0.4bsqv.mongodb.net/MulterUpload?retryWrites=true&w=majority";
 
 MongoClient.connect(
 	url,
 	{ useNewUrlParser: true, useUnifiedTopology: true },
 	(err, db) => {
 		if (err) throw err;
-		database = db.db("ShreejiEstates");
+		database = db.db("MulterUpload");
 		uploads = database.collection("uploads");
 	}
 );
