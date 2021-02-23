@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link
+			rel="shortcut icon"
+			href="images/file_upload.jpg"
+			type="image/x-icon"
+		/>
+		<title>File Upload using Multer</title>
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<body>
+		<h2>File Upload using Multer</h2>
+		<br />
+		<img src="images/file_upload.jpg" alt="" width="200" height="200" />
+		<br />
+		<!-- Upload  -->
+		<form
+			id="file-upload-form"
+			class="uploader"
+			action="/uploadfile"
+			enctype="multipart/form-data"
+			method="POST"
+		>
+			<input
+				id="file-upload"
+				type="file"
+				name="fileUpload"
+				accept="image/*"
+			/>
+
+			<label for="file-upload" id="file-drag">
+				<img id="file-image" src="#" alt="Preview" class="hidden" />
+				<div id="start">
+					<i class="fa fa-upload" aria-hidden="true"></i>
+					<div>Select a file or drag here</div>
+					<div id="notimage" class="hidden">
+						Please select an image
+					</div>
+					<span id="file-upload-btn" class="btn btn-primary"
+						>Select a file</span
+					>
+				</div>
+				<div id="response" class="hidden">
+					<div id="messages"></div>
+				</div>
+			</label>
+			<button class="btn btn-primary" type="submit">Upload</button>
+		</form>
+
+		<script>
+			// File Upload
+			function singleUpload() {
+				function Init() {
+					var fileSelect = document.getElementById("file-upload"),
+						fileDrag = document.getElementById("file-drag"),
+						submitButton = document.getElementById("submit-button");
+
+					fileSelect.addEventListener(
+						"change",
+						fileSelectHandler,
+						false
+					);
+				}
+
+				function fileDragHover(e) {
+					var fileDrag = document.getElementById("file-drag");
+
+					e.stopPropagation();
+					e.preventDefault();
+
+					fileDrag.className =
+						e.type === "dragover"
+							? "hover"
+							: "modal-body file-upload";
+				}
+
+				function fileSelectHandler(e) {
+					// Fetch FileList object
+					var files = e.target.files || e.dataTransfer.files;
+
+					// Cancel event and hover styling
+					fileDragHover(e);
+
+					// Process all File objects
+					for (var i = 0, f; (f = files[i]); i++) {
+						parseFile(f);
+					}
+				}
+
+				// Output
+				function output(msg) {
+					// Response
+					var m = document.getElementById("messages");
+					m.innerHTML = msg;
+				}
+
+				function parseFile(file) {
+					console.log(file.name);
+					output("<strong>" + encodeURI(file.name) + "</strong>");
+
+					var fileType = file.type;
+					console.log(fileType);
+					var imageName = file.name;
+
+					var isGood = /\.(?=gif|jpg|png|jpeg)/gi.test(imageName);
+					if (isGood) {
+						document
+							.getElementById("start")
+							.classList.add("hidden");
+						document
+							.getElementById("response")
+							.classList.remove("hidden");
+						document
+							.getElementById("notimage")
+							.classList.add("hidden");
+						// Thumbnail Preview
+						document
+							.getElementById("file-image")
+							.classList.remove("hidden");
+						document.getElementById(
+							"file-image"
+						).src = URL.createObjectURL(file);
+					} else {
+						document
+							.getElementById("file-image")
+							.classList.add("hidden");
+						document
+							.getElementById("notimage")
+							.classList.remove("hidden");
+						document
+							.getElementById("start")
+							.classList.remove("hidden");
+						document
+							.getElementById("response")
+							.classList.add("hidden");
+						document.getElementById("file-upload-form").reset();
+					}
+				}
+
+				// Check for the various File API support.
+				if (window.File && window.FileList && window.FileReader) {
+					Init();
+				} else {
+					document.getElementById("file-drag").style.display = "none";
+				}
+			}
+			singleUpload();
+		</script>
+	</body>
+</html>
