@@ -20,7 +20,21 @@ const storage = multer.diskStorage({
 	},
 });
 
-const upload = multer({ storage: storage }).single("fileUpload");
+const upload = multer({
+	storage: storage,
+	// fileFilter: (req, file, cb) => {
+	// 	if (
+	// 		file.mimetype == "image/png" ||
+	// 		file.mimetype == "image/jpg" ||
+	// 		file.mimetype == "image/jpeg"
+	// 	) {
+	// 		cb(null, true);
+	// 	} else {
+	// 		cb(null, false);
+	// 		return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+	// 	}
+	// },
+});
 
 // connect to mongodb database
 const MongoClient = require("mongodb").MongoClient;
@@ -37,26 +51,43 @@ MongoClient.connect(
 	}
 );
 
-app.get("/", function (req, res) {
-	res.sendFile(__dirname + "/index.html");
+app.get("/single", function (req, res) {
+	res.sendFile(__dirname + "/singleupload.html");
 });
 
-app.post("/uploadfile", (req, res) => {
-	upload(req, res, (err) => {
-		if (err) {
-		} else {
-			const fileName = req.file.originalname;
-			const fileType = req.file.mimetype;
-			const fileSize = req.file.size;
-			const filePath = req.file.path;
-			const file = { fileName, fileType, fileSize, filePath };
-			uploads.insertOne(file, function (err, res) {
-				if (err) throw err;
-				console.log("Image path for " + fileName + " added to MongoDB");
-			});
-			res.sendFile(__dirname + "/success.html");
-		}
+app.get("/multiple", function (req, res) {
+	res.sendFile(__dirname + "/multipleupload.html");
+});
+
+app.post("/uploadsinglefile", upload.single("fileUpload"), (req, res) => {
+	const file = req.file;
+	const fileName = file.originalname;
+	const fileType = file.mimetype;
+	const fileSize = file.size;
+	const filePath = file.path;
+	const fileObject = { fileName, fileType, fileSize, filePath };
+	uploads.insertOne(fileObject, function (err, res) {
+		if (err) throw err;
+		console.log("Image path for " + fileName + " added to MongoDB");
 	});
+	res.sendFile(__dirname + "/success.html");
+});
+
+app.post("/uploadmultiplefile", upload.array("fileUpload", 5), (req, res) => {
+	const files = req.files;
+	for (var i = 0; i < files.length; i++) {
+		const fileName = files[i].originalname;
+		const fileType = files[i].mimetype;
+		const fileSize = files[i].size;
+		const filePath = files[i].path;
+		const file = { fileName, fileType, fileSize, filePath };
+		uploads.insertOne(file, function (err, res) {
+			if (err) throw err;
+			console.log("File path for " + fileName + " added to MongoDB");
+		});
+	}
+
+	res.sendFile(__dirname + "/success.html");
 });
 
 app.listen(port, () =>

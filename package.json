@@ -1,5 +1,5 @@
 {
-	"name": "multer",
+	"name": "fileuploadmulter",
 	"version": "1.0.0",
 	"description": "",
 	"main": "server.js",
@@ -16,6 +16,6 @@
 		"start": "node server.js",
 		"server": "nodemon server.js"
 	},
-	"author": "",
+	"author": "Girish Thatte",
 	"license": "ISC"
 }
